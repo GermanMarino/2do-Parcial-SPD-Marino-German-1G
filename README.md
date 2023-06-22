@@ -1,19 +1,19 @@
 # Descripción
 Mediante el uso de
-+1 servomotor  
-+1 placa de arduino
-+1 lcd 16x2
-+1 sensor IR
-+1 Control remoto
-+2 leds
++ 1 servomotor  
++ 1 placa de arduino
++ 1 lcd 16x2
++ 1 sensor IR
++ 1 Control remoto
++ 2 leds
 Se lleva a cabo el desarrollo del proyecto de un sistema de incendio que nos
 permite detectar cambios de temperatura y activar el servomotor cuando se detecta
 un incendio. Mostrando por un display la temperatura actual y la estacion del año. 
 
 #Funcionalidades extra:
--Se prende un led rojo cuando se activa la alarma el cual es apagado cuando
++ Se prende un led rojo cuando se activa la alarma el cual es apagado cuando
 se desactiva la misma.
--Si la temperatura esta en un rango de -40 grados a -1 grado, presionando el boton 2
++ Si la temperatura esta en un rango de -40 grados a -1 grado, presionando el boton 2
 del control remoto nos devuelve un mensaje que dice "Frio critico" y enciende un 
 led naranja que sera apagado cuando se suba la temperatura y se presione nuevamente el boton 2.
 
