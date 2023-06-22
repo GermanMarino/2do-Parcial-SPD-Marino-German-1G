@@ -120,7 +120,8 @@ void prenderMiServo(float temperatura){
 
 Esta funcion apaga el servo motor y muestra un mensaje de ALARMA DESACTIVADA.
 ```C++
-void {
+void apagarMiServo()
+{
   miServo.detach(); //apago servo
   displayLcd.clear();
   displayLcd.setCursor(0, 0);
