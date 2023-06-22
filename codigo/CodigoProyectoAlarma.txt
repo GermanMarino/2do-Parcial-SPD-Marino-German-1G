@@ -1,0 +1,222 @@
+//SEGUNDO PRCIAL PRACTICO SPD//
+//Marino Germán
+//1G
+//DNI 43318144
+//GDB:
+
+#include <LiquidCrystal.h>
+#include <IRremote.h>
+#include <Servo.h>
+
+int IR = 11;
+
+LiquidCrystal displayLcd(7, 6, 5, 4, 3, 2);//inicializa los pines que se usan del display 
+int sensorTemp;
+
+int servoPin = 9;
+
+Servo miServo; // para que miServo pueda pueda usar los metodos del control de servos
+
+#define Boton_1 0xEF10BF00
+#define Boton_2 0xEE11BF00
+#define Boton_Apagar 0xFF00BF00
+#define reactivarAlarma 0xFA05BF00
+#define LED_ROJO 13
+#define LED_NARANJA 12
+
+
+bool flagServoApagado = false;
+
+
+
+void setup()
+{
+  pinMode(LED_ROJO, OUTPUT); //led indicador incendio
+  pinMode(LED_NARANJA, OUTPUT); //led indicador frio critico
+  IrReceiver.begin(IR, DISABLE_LED_FEEDBACK); // Inicialización del control
+  displayLcd.begin(16, 2); //Inicializa el display LCD
+  miServo.attach(servoPin); //indico en que pin esta el servo
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  sensorTemp = analogRead(A0);
+  float temperatura = map(sensorTemp, 20, 358, -40, 125); //temp a mapear-20 a 358 es el rango de sensorTemp - seteo para sensorTemp rango de temp de -40 a 125°
+  Serial.println(temperatura);
+  
+  
+  
+  //muestro siempre la temp sensada
+  if (temperatura >= 60.0 && flagServoApagado == false) //si no pongo esta condicion siempre me sale en pantalla alarma encendida
+  {
+    prenderLedRojo();
+    prenderMiServo(temperatura);
+    mostrarTemperatura(temperatura);
+  }
+  else 
+  {
+    if (temperatura >= 60.0 && flagServoApagado == true)
+    {
+      apagarLedRojo();
+      mostrarTemperatura(temperatura);
+      displayLcd.setCursor(0, 1);
+      displayLcd.print("ALARMA APAGADA");
+    }
+    else
+    {
+      mostrarTemperatura(temperatura);
+    }
+  }
+  delay(1000); // para que no se actualize constantemente la pantalla y deje ver lo que se printea
+ 
+  if (IrReceiver.decode()) //decode es para que decodifique lo que se toca en el control remoto
+  {
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);//con esto identifico los botones
+    // Compara con el valor de Boton_1
+    if (IrReceiver.decodedIRData.decodedRawData == Boton_1)
+    {
+      mostrarTemperatura(temperatura);
+      estacion(temperatura);
+      delay(1000);
+    }
+    if (IrReceiver.decodedIRData.decodedRawData == Boton_2)
+    {
+      if (temperatura >= -40.0 && temperatura <= -1.0 ) // si esta en esta rango hay frio critico para los componentes
+      {
+        prenderLedNaranja();
+        displayLcd.setCursor(0, 1);
+        displayLcd.print("Frio critico");
+        delay(2000);
+      }
+      else
+      {
+        apagarLedNaranja();
+        displayLcd.setCursor(0, 1);
+        displayLcd.print("Temp: Normal");
+        delay(2000);//para que quede mas tiempo en pantala
+      }
+    }
+    if (IrReceiver.decodedIRData.decodedRawData == Boton_Apagar)
+    {
+      flagServoApagado = true;
+      mostrarTemperatura(temperatura);
+    }
+    if( IrReceiver.decodedIRData.decodedRawData == reactivarAlarma){
+    	flagServoApagado = false ;
+    }
+    IrReceiver.resume(); //para que busque otras señales
+    delay(100);// Tiempo de espera antes de detectar otra señal
+  }
+}
+
+
+
+  
+//Funciones utilizadas
+
+
+
+void estacion(float temperatura)
+{
+  if (temperatura >= -40.0 && temperatura < 10.0)
+  {
+    displayLcd.clear();
+    displayLcd.setCursor(0, 0);
+    displayLcd.print(temperatura);
+    displayLcd.print(" Celsius");
+    displayLcd.setCursor(0, 1);
+    displayLcd.print("Invierno");
+  }
+  else if (temperatura >= 10.0 && temperatura < 15.0)
+  {
+    displayLcd.clear();
+    displayLcd.setCursor(0, 0);
+    displayLcd.print(temperatura);
+    displayLcd.print(" Celsius");
+    displayLcd.setCursor(0, 1);
+    displayLcd.print("Otoño");
+  }
+  else if (temperatura >= 15.0 && temperatura < 25.0)
+  {
+    displayLcd.clear();
+    displayLcd.setCursor(0, 0);
+    displayLcd.print(temperatura);
+    displayLcd.print(" Celsius");
+    displayLcd.setCursor(0, 1);
+    displayLcd.print("Primavera");
+  }
+  else if (temperatura >= 25.0 && temperatura <= 59.0)
+  {
+    displayLcd.clear();
+    displayLcd.setCursor(0, 0);
+    displayLcd.print(temperatura);
+    displayLcd.print(" Celsius");
+    displayLcd.setCursor(0, 1);
+    displayLcd.print("Verano");
+  }
+  else if (temperatura >= 60.0 && temperatura < 125.0)
+  {
+    displayLcd.clear();
+    displayLcd.setCursor(0, 0);
+    displayLcd.print(temperatura);
+    displayLcd.print(" Celsius");
+    displayLcd.setCursor(0, 1);
+  }
+}
+
+void mostrarTemperatura(float temperatura){
+    displayLcd.clear();
+    displayLcd.setCursor(0,0);
+    displayLcd.print(temperatura);
+    displayLcd.print(" Celsius");
+  }
+  
+void prenderMiServo(float temperatura){
+  if (temperatura >= 60.0 && temperatura < 125.0){
+    
+    displayLcd.clear();
+    displayLcd.setCursor(0,0);
+    displayLcd.print("ALARMA ACTIVADA");
+    
+    for (int angulo = 0; angulo <= 180; angulo++) {
+      miServo.write(angulo);  // Mueve el servomotor al ángulo actual
+      delay(15);  // Pequeña pausa para permitir que el servomotor se mueva
+    }
+    for (int angulo = 180; angulo >= 0; angulo--) {
+      miServo.write(angulo);  // Mueve el servomotor al ángulo actual
+      delay(15);  // Pequeña pausa para permitir que el servomotor se mueva
+    }
+  }
+}
+
+void apagarMiServo(){
+  miServo.detach(); //apago servo
+  displayLcd.clear();
+  displayLcd.setCursor(0, 0);
+  displayLcd.print("ALARMA DESACTIVADA"); 
+}
+
+void prenderLedNaranja()
+{  
+  digitalWrite(LED_NARANJA, HIGH);
+  delay(500);  
+}
+
+void apagarLedNaranja()
+{  
+  digitalWrite(LED_NARANJA, LOW);
+  delay(500); 
+}
+  
+void apagarLedRojo()
+{
+  digitalWrite(LED_ROJO, LOW);
+  delay(500); 
+}
+
+void prenderLedRojo()
+{
+  digitalWrite(LED_ROJO, HIGH);  
+  delay(500);                  
+}
