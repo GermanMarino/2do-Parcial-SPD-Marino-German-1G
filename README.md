@@ -1,11 +1,11 @@
 # Descripción
-Mediante el uso de: 
--1 servomotor  
--1 placa de arduino
--1 lcd 16x2
--1 sensor IR
--1 Control remoto
--2 leds
+Mediante el uso de
++1 servomotor  
++1 placa de arduino
++1 lcd 16x2
++1 sensor IR
++1 Control remoto
++2 leds
 Se lleva a cabo el desarrollo del proyecto de un sistema de incendio que nos
 permite detectar cambios de temperatura y activar el servomotor cuando se detecta
 un incendio. Mostrando por un display la temperatura actual y la estacion del año. 
