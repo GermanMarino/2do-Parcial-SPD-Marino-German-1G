@@ -11,7 +11,7 @@ Se lleva a cabo el desarrollo del proyecto de un sistema de incendio que nos
 permite detectar cambios de temperatura y activar el servomotor cuando se detecta
 un incendio. Mostrando por un display la temperatura actual y la estacion del año. 
 
-#Funcionalidades extra:
+### Funcionalidades extra:
 + Se prende un led rojo cuando se activa la alarma el cual es apagado cuando
 se desactiva la misma.
 + Si la temperatura esta en un rango de -40 grados a -1 grado, presionando el boton 2
@@ -23,7 +23,7 @@ led naranja que sera apagado cuando se suba la temperatura y se presione nuevame
 
 
 ![visual](imagenes/esquemaSPD.png)
-## Funciones principales.
+## Funciones utilizadas.
 
 ### "mostrarTemperatura(temperatura)"
 Limpia el lcd setea el cursor en la posicion (0,0) printea la temperatura con un mensaje
@@ -150,7 +150,7 @@ void apagarLedNaranja()
 ```
 
 
-### "(prenderLedRojo())"
+### "prenderLedRojo()"
 Prende un led rojo.
 ```C++
 void prenderLedRojo()
@@ -161,7 +161,7 @@ void prenderLedRojo()
 ```
 
 
-### "(apagarLedRojo())"
+### "apagarLedRojo()"
 Apaga un led rojo.
 ```C++
 void apagarLedRojo()
